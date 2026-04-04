@@ -1,3 +1,5 @@
+# 🚀 PromptPostman
+
 # 🧠 How it Works
 1. **User Input:** Accepts messy, natural human language.
 2. **SLM Parser:** A fine-tuned 3B parameter model processes the intent and aggressively formats it into a strict JSON tool call.
