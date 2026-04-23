@@ -1,3 +1,3 @@
-llama-cpp-python
-python-dotenv
-huggingface-hub
+llama-cpp-python==0.2.87
+rich==13.7.0
+python-dotenv==1.0.0

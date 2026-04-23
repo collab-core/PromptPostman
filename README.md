@@ -279,23 +279,63 @@ Thank you for using Prompt Postman. Goodbye!
 
 ```
 PromptPostman/
-├── main.py                          # Main application
-├── requirements.txt                 # Python dependencies
-├── .env                            # Configuration file (not in git)
-├── .gitignore                      # Git ignore rules
-├── README.md                       # This file
-└── llama-3.2-3b-instruct.Q4_K_M.gguf  # AI model (auto-downloaded from Hugging Face)
+├── main.py                                                    # Main application
+├── requirements.txt                                           # Python dependencies
+├── .env                                                       # Configuration file (not in git)
+├── .gitignore                                                 # Git ignore rules
+├── README.md                                                  # This file
+├── Llama3_2_(1B_and_3B)_Conversational.ipynb                # Model training notebook (Jupyter)
+└── llama-3.2-3b-instruct.Q4_K_M.gguf                        # AI model (auto-downloaded from Hugging Face)
 ```
+
+## Model Training Notebook
+
+The repository includes a Jupyter notebook for training custom Llama 3.2 models:
+
+### File: `Llama3_2_(1B_and_3B)_Conversational.ipynb`
+
+This notebook demonstrates how to:
+
+- **Install and setup** Unsloth for efficient fine-tuning
+- **Prepare training data** for conversational AI models
+- **Train Llama 3.2 models** (1B and 3B parameters) on Google Colab (free Tesla T4 GPU)
+- **Run inference** with the trained model
+- **Save and export** the model for production use
+- **Quantize models** to GGUF format for efficient deployment
+
+### Requirements for Training
+
+- Google Colab account (free or paid)
+- Custom training dataset (CSV format)
+- Basic knowledge of fine-tuning and Hugging Face hub
+
+### How to Use
+
+1. Open the notebook in Google Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com)
+2. Upload your training data
+3. Follow the notebook cells step-by-step
+4. Export the trained model to Hugging Face
+5. Update `main.py` to use your custom model
+
+**Note**: This notebook uses Unsloth for efficient training. For more details, visit [Unsloth Documentation](https://unsloth.ai/)
 
 ## Security Notes
 
 - ⚠️ **Never commit `.env` to version control** - It contains sensitive credentials
 - ⚠️ **Use app-specific passwords** - Never use your main Gmail password
 - ⚠️ **Keep credentials private** - Don't share your `.env` file
+- ⚠️ **Model ownership** - The pre-trained model is from Hugging Face; ensure you have rights to use and modify it
 
 ## Contributing
 
-Feel free to fork and contribute improvements!
+Feel free to fork and contribute improvements! Whether it's:
+
+- Improving the email generation
+- Adding new features to the terminal editor
+- Enhancing the training notebook
+- Fixing bugs or optimizing performance
+
+Pull requests are welcome!
 
 ## License
 
