@@ -5,6 +5,8 @@
 ## Features
 
 - **AI-Powered Email Generation**: Uses Llama 3.2 3B model to draft emails in your personal style
+- **Terminal-Based Editor**: Edit generated emails directly in the terminal with multiple editing options
+- **Auto-Download Model**: Automatically fetches the model from Hugging Face on first run
 - **Smart Recipient Detection**: Automatically detects and maps nicknames to email addresses
 - **Professional UI**: Clean terminal interface with loading animations
 - **SMTP Integration**: Direct email sending via Gmail SMTP
@@ -15,7 +17,8 @@
 
 - Python 3.8+
 - 4GB+ RAM (for running Llama 3.2 model)
-- Internet connection (for SMTP)
+- 2GB+ Storage (for downloaded model)
+- Internet connection (for model auto-download and SMTP)
 - Gmail account with app-specific password
 
 ## Installation
@@ -43,18 +46,38 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Download the Model
+### 4. Model Setup (Auto-Download)
 
-Download `llama-3.2-3b-instruct.Q4_K_M.gguf` and place it in the project root directory.
+The application automatically downloads the model from Hugging Face on first run if it's not already present. The download may take a few minutes depending on your internet speed.
 
-You can download it from:
+**Note**: To use a custom model:
 
-- [Hugging Face](https://huggingface.co/models)
-- [Ollama](https://ollama.ai/)
+1. Upload your model to a Hugging Face repository
+2. Update these values in `main.py`:
+   ```python
+   HF_REPO_ID = "your-username/your-repo-name"
+   MODEL_FILENAME = "your-model-file.gguf"
+   ```
 
 ## Configuration
 
-### 1. Set Up `.env` File
+### 1. Configure Model (Optional)
+
+By default, the app uses:
+
+- **Repository**: `hitrohitro/llama-3.2-3b-email-assistant`
+- **Model File**: `llama-3.2-3b-instruct.Q4_K_M.gguf`
+
+To use a different model, edit the top of `main.py`:
+
+```python
+HF_REPO_ID = "your-username/your-repo-name"
+MODEL_FILENAME = "your-model.gguf"
+```
+
+The model will be automatically downloaded from Hugging Face on first run.
+
+### 2. Set Up `.env` File
 
 Copy the template below and update with your details:
 
@@ -72,7 +95,7 @@ NICKNAME_JOHN=john.doe@company.com
 NICKNAME_SARAH=sarah.johnson@company.com
 ```
 
-### 2. Gmail App Password Setup
+### 3. Gmail App Password Setup
 
 1. Go to [myaccount.google.com](https://myaccount.google.com)
 2. Click **Security** in the left menu
@@ -82,7 +105,7 @@ NICKNAME_SARAH=sarah.johnson@company.com
 6. Copy the generated 16-character password
 7. Paste it in `.env` as `SENDER_PASSWORD` (without quotes)
 
-### 3. Add Nicknames
+### 4. Add Nicknames
 
 In the `.env` file, add as many nickname mappings as needed:
 
@@ -107,12 +130,20 @@ python main.py
    - "Draft an email to David about the quarterly review"
    - "Email John asking for feedback on the proposal"
 3. **Review draft** - AI generates and displays the email
-4. **Confirm recipient** - If nickname detected, confirm sending:
+4. **Edit (Optional)** - Choose to edit the email:
+   - Type `y` or `yes` to enter terminal editor
+   - Choose one of three options:
+     - **Option 1**: Replace entire email (paste new content, type `END` to finish)
+     - **Option 2**: Edit specific line(s) (select line numbers and update)
+     - **Option 3**: Keep original draft
+   - The edited email will be displayed
+   - Type `n` or `no` to skip editing and keep original draft
+5. **Confirm recipient** - If nickname detected, confirm sending:
    - Type `y` or `yes` to send to detected recipient
    - Type `n` or `no` to specify a different email
-5. **Enter email** - Provide recipient email address if needed
-6. **Email sent** - Confirmation message displays
-7. **Continue or quit**:
+6. **Enter email** - Provide recipient email address if needed
+7. **Email sent** - Confirmation message displays
+8. **Continue or quit**:
    - Press `q` to exit application
    - Press any other key to draft another email
 
@@ -141,6 +172,52 @@ Hi David,
 
 I hope this email finds you well. I wanted to reach out to discuss
 our upcoming meeting on the marketing strategy. Are you available
+next Tuesday at 2 PM?
+
+Best regards,
+Rohit
+======================================================================
+
+Would you like to edit this email? (y/n): y
+
+----------------------------------------------------------------------
+TERMINAL EMAIL EDITOR
+----------------------------------------------------------------------
+
+Current email:
+
+ 1. Hi David,
+ 2.
+ 3. I hope this email finds you well. I wanted to reach out to discuss
+ 4. our upcoming meeting on the marketing strategy. Are you available
+ 5. next Tuesday at 2 PM?
+ 6.
+ 7. Best regards,
+ 8. Rohit
+
+----------------------------------------------------------------------
+Options:
+  1. Replace entire email
+  2. Edit specific line(s)
+  3. Keep current email
+----------------------------------------------------------------------
+
+Select option (1/2/3): 2
+Enter line number(s) to edit (e.g., '1' or '1,3,5'): 3,4
+
+Current line 3: I hope this email finds you well. I wanted to reach out to discuss
+Enter new content: I hope this email finds you well. I wanted to discuss
+
+Current line 4: our upcoming meeting on the marketing strategy. Are you available
+Enter new content: our upcoming meeting on the marketing strategy. Would you be available
+
+======================================================================
+EDITED EMAIL
+======================================================================
+Hi David,
+
+I hope this email finds you well. I wanted to discuss
+our upcoming meeting on the marketing strategy. Would you be available
 next Tuesday at 2 PM?
 
 Best regards,
@@ -177,9 +254,10 @@ Thank you for using Prompt Postman. Goodbye!
 
 **Solution:**
 
-- Verify the `.gguf` file path is correct
-- Ensure you have at least 4GB free RAM
-- Try running on a machine with better specs
+- Verify your internet connection (model downloads from Hugging Face)
+- Ensure `HF_REPO_ID` and `MODEL_FILENAME` in `main.py` are correct
+- Check you have at least 4GB free storage for the model
+- Try running on a machine with better specs if download times out
 
 ### Error: "SMTP connection failed"
 
@@ -206,7 +284,7 @@ PromptPostman/
 ├── .env                            # Configuration file (not in git)
 ├── .gitignore                      # Git ignore rules
 ├── README.md                       # This file
-└── llama-3.2-3b-instruct.Q4_K_M.gguf  # AI model (not in git)
+└── llama-3.2-3b-instruct.Q4_K_M.gguf  # AI model (auto-downloaded from Hugging Face)
 ```
 
 ## Security Notes

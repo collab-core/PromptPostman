@@ -6,6 +6,20 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
+from huggingface_hub import hf_hub_download
+
+# --- CONFIGURATION ---
+# Replace this with your actual Hugging Face username and repo name
+HF_REPO_ID = "hitrohitro/llama-3.2-3b-email-assistant" 
+MODEL_FILENAME = "llama-3.2-3b-instruct.Q4_K_M.gguf"
+
+# --- AUTO-DOWNLOAD ---
+if not os.path.exists(MODEL_FILENAME):
+    print(f"Downloading model from Hugging Face ({HF_REPO_ID}). This may take a few minutes...")
+    # This downloads the file and saves it in your current folder (".")
+    hf_hub_download(repo_id=HF_REPO_ID, filename=MODEL_FILENAME, local_dir=".")
+else:
+    print("Model found locally!")
 
 # Load environment variables
 load_dotenv()
@@ -76,11 +90,70 @@ def ask_to_continue():
         else:
             return True
 
+def edit_email(email_text):
+    """Terminal-based email editor"""
+    print("\n" + "-" * 70)
+    print("TERMINAL EMAIL EDITOR")
+    print("-" * 70)
+    print("\nCurrent email:\n")
+    
+    # Display current email with line numbers
+    lines = email_text.split('\n')
+    for i, line in enumerate(lines, 1):
+        print(f"{i:2}. {line}")
+    
+    print("\n" + "-" * 70)
+    print("Options:")
+    print("  1. Replace entire email")
+    print("  2. Edit specific line(s)")
+    print("  3. Keep current email")
+    print("-" * 70)
+    
+    choice = input("\nSelect option (1/2/3): ").strip()
+    
+    if choice == '1':
+        # Replace entire email
+        print("\nEnter new email (type 'END' on a new line when finished):\n")
+        new_lines = []
+        while True:
+            line = input()
+            if line.strip() == 'END':
+                break
+            new_lines.append(line)
+        return '\n'.join(new_lines)
+    
+    elif choice == '2':
+        # Edit specific lines
+        line_choice = input("Enter line number(s) to edit (e.g., '1' or '1,3,5'): ").strip()
+        
+        try:
+            if ',' in line_choice:
+                line_nums = [int(x.strip()) for x in line_choice.split(',')]
+            else:
+                line_nums = [int(line_choice)]
+            
+            for line_num in line_nums:
+                if 1 <= line_num <= len(lines):
+                    print(f"\nCurrent line {line_num}: {lines[line_num - 1]}")
+                    new_content = input("Enter new content: ").strip()
+                    lines[line_num - 1] = new_content
+            
+            return '\n'.join(lines)
+        
+        except (ValueError, IndexError):
+            print("Invalid line number. Keeping original email.")
+            return email_text
+    
+    else:
+        # Keep current email
+        print("Keeping original email.")
+        return email_text
+
 # Load the model once at startup
 print("Initializing application...")
 loading_animation(duration=2, text="Loading model")
 llm = Llama(
-    model_path="./llama-3.2-3b-instruct.Q4_K_M.gguf",
+    model_path=f"./{MODEL_FILENAME}",
     chat_format="llama-3",
     n_ctx=2048,
     verbose=False
@@ -127,6 +200,15 @@ while app_running:
     print("=" * 70)
     print(response_text)
     print("=" * 70 + "\n")
+
+    # 4.5 Ask if user wants to edit
+    if confirm_input("Would you like to edit this email?"):
+        response_text = edit_email(response_text)
+        print("\n" + "=" * 70)
+        print("EDITED EMAIL")
+        print("=" * 70)
+        print(response_text)
+        print("=" * 70 + "\n")
 
     # 5. Determine recipient email
     receiver_email = None
